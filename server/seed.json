@@ -1,0 +1,25 @@
+{
+  "patients": [
+    {
+      "id": "p1",
+      "medicalRecordNo": "RM-0001",
+      "name": "Contoh Pasien Satu",
+      "birthDate": "1990-05-12",
+      "gender": "F",
+      "phone": "081200000001",
+      "address": "Alamat fiktif 1"
+    },
+    {
+      "id": "p2",
+      "medicalRecordNo": "RM-0002",
+      "name": "Contoh Pasien Dua",
+      "birthDate": "1985-11-03",
+      "gender": "M",
+      "phone": "081200000002",
+      "address": "Alamat fiktif 2"
+    }
+  ],
+  "medicines": [],
+  "doctors": [],
+  "schedules": []
+}
