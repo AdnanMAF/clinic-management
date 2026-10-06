@@ -100,9 +100,9 @@ export function PatientForm({ initialValues, submitLabel, onSubmit }: Props) {
           onChange={(e) => setField("gender", e.target.value)}
           className="w-full rounded border border-gray-500 bg-transparent px-3 py-2"
         >
-          <option value="">Pilih...</option>
-          <option value="M">Laki-laki</option>
-          <option value="F">Perempuan</option>
+          <option value="" className="bg-neutral-900 text-neutral-100">Pilih...</option>
+          <option value="M" className="bg-neutral-900 text-neutral-100">Laki-laki</option>
+          <option value="F" className="bg-neutral-900 text-neutral-100">Perempuan</option>
         </select>
         {errors.gender && (
           <p className="mt-1 text-sm text-red-500">{errors.gender}</p>
