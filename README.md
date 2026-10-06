@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Clinic Management
 
-## Getting Started
+Aplikasi manajemen klinik sederhana: pendataan pasien, obat, dan jadwal dokter.
 
-First, run the development server:
+> Status: dalam pengerjaan. Modul Pasien sudah berfungsi penuh.
+> Data yang dipakai hanya data fiktif. Jangan gunakan data pasien sungguhan.
+
+## Fitur saat ini
+
+- Daftar pasien dengan keadaan memuat, kosong, dan error
+- Tambah, ubah, dan hapus pasien (dengan konfirmasi hapus)
+- Validasi input di browser dan di server
+- REST API untuk pasien, diuji manual dengan skenario kasus tepi
+
+## Tumpukan teknologi
+
+Next.js 16, React, TypeScript, Tailwind CSS. Penyimpanan berupa file JSON di server.
+
+## Menjalankan
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka http://localhost:3000/patients. File `data/db.json` dibuat otomatis dari
+`server/seed.json` saat pertama kali dibutuhkan. Hapus file itu untuk mengembalikan data awal.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## API pasien
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Metode | Path | Hasil |
+|---|---|---|
+| GET | `/api/patients` | 200, daftar pasien |
+| POST | `/api/patients` | 201; 400 input tidak valid; 409 No. RM duplikat |
+| GET | `/api/patients/[id]` | 200; 404 |
+| PUT | `/api/patients/[id]` | 200 (mengganti seluruh data); 400; 404; 409 |
+| DELETE | `/api/patients/[id]` | 204; 404 |
 
-## Learn More
+## Struktur folder
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/          # hanya routing: halaman dan route handler
+components/   # UI generik yang tidak tahu domain (Button, TextField)
+features/     # satu folder per domain (patients: types, schema, repository, client, hooks, components)
+server/       # akses data (db.ts) dan data awal (seed.json)
+data/         # data runtime, tidak di-commit
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Keputusan desain
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Berbasis fitur.** Kode per domain berada di `features/<domain>`, sehingga modul baru tidak menyentuh modul lain.
+- **Validasi satu sumber.** `schema.ts` murni (tanpa `fs` atau Next) dan dipakai di browser dan server. Server tetap memvalidasi ulang.
+- **Batas client/server.** `repository.ts` dan `db.ts` memakai `server-only`. Kode server yang tidak sengaja ter-import ke client akan gagal saat build.
+- **Lapisan data bisa diganti.** Komponen hanya bicara lewat REST API. Mengganti file JSON dengan database cukup mengubah `server/db.ts`.
+- **Pengecekan duplikat atomik.** Cek No. RM dan penulisan terjadi dalam satu antrean penulisan, dan file ditulis lewat file sementara lalu `rename`.
 
-## Deploy on Vercel
+## Keterbatasan yang diketahui
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Penyimpanan JSON hanya aman untuk satu proses Node. Bukan pengganti database.
+- Belum ada autentikasi.
+- Belum ada tes otomatis. Pengujian masih manual.
+- Telepon dan format No. RM belum divalidasi. Batas "tanggal lahir di masa depan" memakai UTC.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Rencana
+
+- [x] API dan UI Pasien (daftar, tambah, ubah, hapus)
+- [ ] Sidebar dan tata letak aplikasi
+- [ ] Pencarian pasien
+- [ ] Modul Obat (stok, kedaluwarsa)
+- [ ] Modul Dokter
+- [ ] Modul Jadwal dokter dengan deteksi jadwal bentrok
+- [ ] Dashboard ringkasan
+- [ ] Tes otomatis untuk fungsi validasi
+- [ ] Migrasi penyimpanan ke database
